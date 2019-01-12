@@ -29,13 +29,17 @@ function BookingPrice(){
         if(eventObj[i].persons >= 10 && eventObj[i].persons < 20){
           barObj[j].pricePerHour = barObj[j].pricePerHour * 0.9;
         }
-        else if(eventObj[i].persons >= 21 && eventObj[i].persons < 60){
+        else if(eventObj[i].persons >= 20 && eventObj[i].persons < 60){
           barObj[j].pricePerHour = barObj[j].pricePerHour * 0.7;
         }
         else if(eventObj[i].persons >= 60){
           barObj[j].pricePerHour = barObj[j].pricePerHour * 0.5;
         }
         eventObj[i].price = eventObj[i].time * barObj[j].pricePerHour + eventObj[i].persons * barObj[j].pricePerPerson;
+        var com = eventObj[i].price * 0.3;
+        eventObj[i].commission.insurance = com * 0.5;
+        eventObj[i].commission.treasury = eventObj[i].persons;
+        eventObj[i].commission.privateaser = com * 0.5 - eventObj[i].persons;
       }
     }
   }
