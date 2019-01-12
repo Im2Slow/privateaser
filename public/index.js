@@ -19,7 +19,27 @@ const bars = [{
   'pricePerHour': 250,
   'pricePerPerson': 80
 }];
-
+function BookingPrice(){
+  var barObj = ParseJsonArray(bars);
+  var eventObj = ParseJsonArray(events);
+  for(var i = 0 ; i<barObj.length;i++)
+  {
+    for(var j = 0; j < eventObj.length; j++){
+      if(eventObj[i].barId == barObj[j].id){
+        eventObj[i].price = eventObj[i].time * barObj[j].pricePerHour + eventObj[i].persons * barObj[j].pricePerPerson;
+      }
+    }
+  }
+  return eventObj;
+}
+function ParseJsonArray(array){
+    var objectArray = new Array();
+  for(var i = 0; i<array.length;i++)
+  {
+    objectArray[i] = JSON.parse(JSON.stringify(array[i]));
+  }
+  return objectArray;
+}
 //list of current booking events
 //useful for ALL steps
 //the time is hour
@@ -146,6 +166,8 @@ const actors = [{
   }]
 }];
 
-console.log(bars);
+/*console.log(bars);
 console.log(events);
-console.log(actors);
+console.log(actors);*/
+const updatedArray = BookingPrice();
+console.log(updatedArray);
