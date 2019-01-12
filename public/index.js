@@ -19,11 +19,8 @@ const bars = [{
   'pricePerHour': 250,
   'pricePerPerson': 80
 }];
-function BookingPrice(){
-  var barObj = ParseJsonArray(bars);
-  var eventObj = ParseJsonArray(events);
-  for(var i = 0 ; i<barObj.length;i++)
-  {
+function BookingPrice(barObj, eventObj, actorsObj){
+  for(var i = 0 ; i<barObj.length;i++){
     for(var j = 0; j < eventObj.length; j++){
       if(eventObj[j].barId == barObj[i].id){
         if(eventObj[j].persons >= 10 && eventObj[j].persons < 20){
@@ -51,10 +48,18 @@ function BookingPrice(){
         }
         eventObj[j].commission.insurance = com * 0.5;
         eventObj[j].commission.treasury = eventObj[j].persons;
+        for(var k = 0; k < actorsObj.length; k++){
+          if(actorsObj[k].eventId == eventObj[j].id){
+            actorsObj[k].payment[0].amount = eventObj[j].price;
+            actorsObj[k].payment[1].amount = eventObj[j].price - eventObj[j].commission.insurance - eventObj[j].commission.treasury - eventObj[j].commission.privateaser;
+            actorsObj[k].payment[2].amount = eventObj[j].commission.insurance;
+            actorsObj[k].payment[3].amount = eventObj[j].commission.treasury;
+            actorsObj[k].payment[4].amount = eventObj[j].commission.privateaser;
+          }
+        }
       }
     }
   }
-  return eventObj;
 }
 function ParseJsonArray(array){
   var objectArray = new Array();
@@ -189,9 +194,9 @@ const actors = [{
     'amount': 0
   }]
 }];
-
-/*console.log(bars);
-console.log(events);
-console.log(actors);*/
-const updatedArray = BookingPrice();
-console.log(updatedArray);
+var barObj = ParseJsonArray(bars);
+var eventObj = ParseJsonArray(events);
+var actorsObj = ParseJsonArray(actors);
+BookingPrice(barObj, eventObj, actorsObj);
+console.log(eventObj);
+console.log(actorsObj);
