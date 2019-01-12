@@ -25,28 +25,39 @@ function BookingPrice(){
   for(var i = 0 ; i<barObj.length;i++)
   {
     for(var j = 0; j < eventObj.length; j++){
-      if(eventObj[i].barId == barObj[j].id){
-        if(eventObj[i].persons >= 10 && eventObj[i].persons < 20){
-          barObj[j].pricePerHour = barObj[j].pricePerHour * 0.9;
+      if(eventObj[j].barId == barObj[i].id){
+        if(eventObj[j].persons >= 10 && eventObj[j].persons < 20){
+          barObj[i].pricePerPerson = barObj[i].pricePerPerson * 0.9;
         }
-        else if(eventObj[i].persons >= 20 && eventObj[i].persons < 60){
-          barObj[j].pricePerHour = barObj[j].pricePerHour * 0.7;
+        else if(eventObj[j].persons >= 20 && eventObj[j].persons < 60){
+          barObj[i].pricePerPerson = barObj[i].pricePerPerson * 0.7;
         }
-        else if(eventObj[i].persons >= 60){
-          barObj[j].pricePerHour = barObj[j].pricePerHour * 0.5;
+        else if(eventObj[j].persons >= 60){
+          barObj[i].pricePerPerson = barObj[i].pricePerPerson * 0.5;
         }
-        eventObj[i].price = eventObj[i].time * barObj[j].pricePerHour + eventObj[i].persons * barObj[j].pricePerPerson;
-        var com = eventObj[i].price * 0.3;
-        eventObj[i].commission.insurance = com * 0.5;
-        eventObj[i].commission.treasury = eventObj[i].persons;
-        eventObj[i].commission.privateaser = com * 0.5 - eventObj[i].persons;
+        //on part du principe que deductibleReduction est un supplément, et n'est donc pas affecté par les discounts => gains de 10 à 50 centimes par tête
+        if(eventObj[j].deductibleReduction == true){
+          barObj[i].pricePerPerson++;
+        }
+        eventObj[j].price = eventObj[j].time * barObj[i].pricePerHour + eventObj[j].persons * barObj[i].pricePerPerson;
+        if(eventObj[j].deductibleReduction == true){
+          //la valeur de la commission n'étant pas affichée dans le json, on peut se permettre de ne pas y compter le supplément de deductibleReduction
+          var com = (eventObj[j].price - eventObj[j].persons)*0.3;
+          //pour à la place l'injecter directement dans la commission de privateaser
+          eventObj[j].commission.privateaser = com * 0.5;
+        }else{
+          var com = eventObj[j].price * 0.3;
+          eventObj[j].commission.privateaser = com * 0.5 - eventObj[j].persons;
+        }
+        eventObj[j].commission.insurance = com * 0.5;
+        eventObj[j].commission.treasury = eventObj[j].persons;
       }
     }
   }
   return eventObj;
 }
 function ParseJsonArray(array){
-    var objectArray = new Array();
+  var objectArray = new Array();
   for(var i = 0; i<array.length;i++)
   {
     objectArray[i] = JSON.parse(JSON.stringify(array[i]));
